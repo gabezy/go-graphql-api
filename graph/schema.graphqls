@@ -1,0 +1,40 @@
+# Schema para categorias (model)
+type Category {
+  id: ID!
+  name: String!
+  description: String
+  courses: [Course!]!
+}
+
+# Schema para categorias (model)
+type Course {
+  id: ID!
+  name: String!
+  description: String
+  category: Category!
+}
+
+# campos para criar nova categoria
+input NewCategory {
+  name: String!
+  description: String
+}
+
+# campos para criar nova categoria
+input NewCourse {
+  name: String!
+  description: String
+  categoryId: ID!
+}
+
+# tipos de consultas disponives (list, byId)
+type Query {
+  categories: [Category]!
+  courses: [Course!]!
+}
+
+# Mutation server para informar como deve ser alterado/criado os dados no GraphQL
+type Mutation {
+  createCategory(input: NewCategory): Category!
+  createCourse(input: NewCourse!): Course!
+}
