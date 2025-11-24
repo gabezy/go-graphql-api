@@ -24,37 +24,19 @@ func (r *mutationResolver) CreateCategory(ctx context.Context, input *model.NewC
 		return nil, err
 	}
 
-	return &model.Category{
-		ID:          category.ID,
-		Name:        category.Name,
-		Description: &category.Description,
-	}, nil
+	categoryModel := model.CategoryDBToModel(category)
+	return &categoryModel, nil
 }
 
 // CreateCourse is the resolver for the createCourse field.
 func (r *mutationResolver) CreateCourse(ctx context.Context, input model.NewCourse) (*model.Course, error) {
-	cat, err := r.CategoryDB.FindByID(input.CategoryID)
-	if err != nil {
-		return nil, err
-	}
-
-	categoryModel := model.Category{
-		ID:          cat.ID,
-		Name:        cat.Name,
-		Description: &cat.Description,
-	}
-
 	newCourse, err := r.CourseDB.Create(input.Name, *input.Description, input.CategoryID)
 	if err != nil {
 		return nil, err
 	}
 
-	return &model.Course{
-		ID:          newCourse.ID,
-		Name:        newCourse.Name,
-		Description: &newCourse.Description,
-		Category:    &categoryModel,
-	}, nil
+	course := model.DBToModel(newCourse)
+	return &course, nil
 }
 
 // Categories is the resolver for the categories field.
@@ -64,16 +46,7 @@ func (r *queryResolver) Categories(ctx context.Context) ([]*model.Category, erro
 		return nil, err
 	}
 
-	var categories []*model.Category
-
-	for _, cat := range categoriesDB {
-		categories = append(categories, &model.Category{
-			ID:          cat.ID,
-			Name:        cat.Name,
-			Description: &cat.Description,
-		})
-	}
-
+	categories := model.CategoryDBListToModelList(categoriesDB)
 	return categories, nil
 }
 
@@ -84,28 +57,7 @@ func (r *queryResolver) Courses(ctx context.Context) ([]*model.Course, error) {
 		return nil, err
 	}
 
-	var coursesModel []*model.Course
-
-	for _, course := range courses {
-		category, err := r.CategoryDB.FindByID(course.CategoryID)
-		if err != nil {
-			return nil, err
-		}
-
-		categoryModel := model.Category{
-			ID:          category.ID,
-			Name:        category.Name,
-			Description: &category.Description,
-		}
-
-		coursesModel = append(coursesModel, &model.Course{
-			ID:          course.ID,
-			Name:        course.Name,
-			Description: &course.Description,
-			Category:    &categoryModel,
-		})
-	}
-
+	coursesModel := model.DBListToModelList(courses)
 	return coursesModel, nil
 }
 
