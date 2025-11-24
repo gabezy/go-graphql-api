@@ -30,12 +30,12 @@ func (c *Category) Create(name string, description string) (Category, error) {
 }
 
 func (c *Category) FindAll() ([]Category, error) {
-	var categories []Category
-
 	rows, err := c.db.Query("SELECT * FROM category")
 	if err != nil {
 		return nil, err
 	}
+
+	var categories []Category
 
 	for rows.Next() {
 		var cat Category
@@ -50,4 +50,15 @@ func (c *Category) FindAll() ([]Category, error) {
 	}
 
 	return categories, nil
+}
+
+func (c *Category) FindByID(ID string) (Category, error) {
+	var category Category
+
+	row := c.db.QueryRow("SELECT * FROM category WHERE id = ?", ID)
+	if err := row.Scan(&category.ID, &category.Name, &category.Description); err != nil {
+		return Category{}, err
+	}
+
+	return category, nil
 }
