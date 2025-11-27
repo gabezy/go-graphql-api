@@ -3,10 +3,9 @@ package model
 import "github.com/gabezy/go-graphql-api/internal/database"
 
 type Course struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Description *string   `json:"description,omitempty"`
-	Category    *Category `json:"category"`
+	ID          string  `json:"id"`
+	Name        string  `json:"name"`
+	Description *string `json:"description,omitempty"`
 }
 
 func DBToModel(db database.Course) Course {
